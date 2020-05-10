@@ -1,0 +1,12 @@
+comp: funcs.c lex.yy.c y.tab.c
+	gcc -o comp funcs.c lex.yy.c y.tab.c -lfl
+
+lex.yy.c: lexer.l y.tab.c
+	flex lexer.l
+
+y.tab.c: 
+	bison -dy parser.y
+
+clean: 
+	rm comp y.tab.c y.tab.h lex.yy.c 2>/dev/null
+
