@@ -1,38 +1,37 @@
-
+/* recognize tokens */
+%option noyywrap nodefault yylineno
 %{
-    # include "y.tab.h"
-
-    void yyerror(char* s);
-
-    int yylval;
-
-    char error_rep[128];
-
+# include "funcs.h"
+# include "y.tab.h"
 %}
+
+/* float exponent */
+EXP ([Ee][-+]?[0-9]+)
 
 %%
 [/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]\n             { /* ignore comment */ }
-";"                                               { return SEP; }
 ":="                                              { return ASN; }
-"*"                                               { return MUL; }
-"/"                                               { return DIV; }
-"+"                                               { return ADD; }
-"-"                                               { return SUB; }
 ">>"                                              { return BITR; }
 "<<"                                              { return BITL; }
-">"                                               { return MORE; }
-"<"                                               { return LESS; }
-"="                                               { return EQU; }
+"+" |
+"-" |
+"*" |
+"/" |
+">" |
+"<" |
+"=" |
+"(" |
+")" |
+","                                               { return yytext[0]; }
 ("IF"|"if"|"If")                                  { return IF; }
 ("ELSE"|"else"|"Else")                            { return ELSE; }
 ("BEGIN"|"begin"|"Begin")                         { return BEG; }
 ("END"|"end"|"End")                               { return END; }
 ("VAR"|"var"|"Var")                               { return VAR; }
-","                                               { return COM; }
-("("|"["|"{")                                     { return LPAR; }
-(")"|"]"|"}")                                     { return RPAR; }
-[0-9]+                                            { yylval = atoi(yytext); return NUM; }
+[0-9]+"."[0-9]*{EXP}? |
+"."?[0-9]+{EXP}?                                  { yylval.d = atof(yytext); return NUM; }
 \n                                                { return EOL; }
 [ \t]                                             { /* ignore white space */ }
-.                                                 { sprintf(error_rep,"Mystery character %c\n", *yytext); yyerror(error_rep); }
+.                                                 { yyerror("Mystery character %c\n", *yytext); }
 %%
+
