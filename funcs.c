@@ -35,6 +35,28 @@ struct ast * newnum(double d)
     return (struct ast *)a;
 }
 
+struct ast * newcmp(int cmptype, struct ast *l, struct ast *r) {
+    struct ast *a = malloc(sizeof(struct ast));
+
+    if (!a) {
+        yyerror("out of space");
+        exit(0);
+    }
+    a->nodetype = '0' + cmptype;
+    a->l = l;
+    a->r = r;
+    return a;
+}
+
+struct ast *newref(struct symbol *s) {
+    return NULL;
+}
+
+struct ast *newasgn(struct symbol *s, struct ast *v) {
+    return NULL;
+}
+
+
 double eval(struct ast *a)
 {
     double v;
@@ -46,9 +68,9 @@ double eval(struct ast *a)
         case '-': v = eval(a->l) - eval(a->r); break;
         case '*': v = eval(a->l) * eval(a->r); break;
         case '/': v = eval(a->l) / eval(a->r); break;
-        case '>': v = eval(a->l) > eval(a->r); break;
-        case '<': v = eval(a->l) < eval(a->r); break;
-        case '=': v = eval(a->l) == eval(a->r); break;
+        case '1': v = eval(a->l) > eval(a->r); break;
+        case '2': v = eval(a->l) < eval(a->r); break;
+        case '3': v = eval(a->l) == eval(a->r); break;
         case 'l': v = (int) eval(a->l) << (int) eval(a->r); break;
         case 'r': v = (int) eval(a->l) >> (int) eval(a->r); break;
         case 'M': v = -eval(a->l); break;
@@ -95,7 +117,7 @@ void yyerror(char *s, ...)
 
     fprintf(stderr, "%d: error: ", yylineno);
     vfprintf(stderr, s, ap);
-    fprintf(stderr, "\n");
+fprintf(stderr, "\n");
 }
 
 int main()

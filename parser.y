@@ -31,25 +31,28 @@ int yylex();
 %left '*' '/'
 %nonassoc UMINUS
 
-%type <a> exp stmt list composite
+%type <a> exp stmt list composite program
 %type <sl> symlist
 
 %start root
 %%
 
-root: 
-    | VAR symlist composite {
-                                 printf("= %8.4g\n", eval($2));
-                                 treefree($2);
-                            }
+root: program { 
+                    printf("= %8.4g\n", eval($1));
+                    treefree($1);
+              }
+    ;
+
+program: VAR symlist composite { }
     | composite { }
     ;
+
 
 symlist: NAME { }
        | NAME ',' symlist { }
        ;
 
-list: { $$ = NULL }
+list: { $$ = NULL; }
     | stmt { }
     | stmt SEP list { if ($3 == NULL)
                           $$ = $1;
