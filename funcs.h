@@ -16,10 +16,20 @@ struct numval {
 };
 
 struct symbol { /* a variable name */
-    struct ref *reflist;
     char *name;
+    double value;
 };
 
+struct symref {
+    int nodetype; /* type N */
+    struct symbol *s;
+};
+
+struct symasgn {
+    int nodetype; /* type = */
+    struct symbol *s;
+    struct ast *v; /* value */
+};
 
 /* build an AST */
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);

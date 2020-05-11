@@ -8,51 +8,28 @@ int yyparse (void);
 
 struct ast * newast(int nodetype, struct ast *l, struct ast *r)
 {
-    printf("nodetype: %i", nodetype);
-    struct ast *a = malloc(sizeof(struct ast));
-        
-    if(!a) {
-        yyerror("out of space");
-        exit(0);
-    }
-    a->nodetype = nodetype;
-    a->l = l;
-    a->r = r;
-    return a;
+    printf("NEW AST (nodetype, left, right)\n Node type: %c\n", nodetype);
+    return NULL;
 }
 
 struct ast * newnum(double d)
 {
-    printf("new number: %f", d);
-    struct numval *a = malloc(sizeof(struct numval));
-        
-    if(!a) {
-        yyerror("out of space");
-        exit(0);
-    }
-    a->nodetype = 'C';
-    a->number = d;
-    return (struct ast *)a;
+    printf("NEW NUM\n NUMBER: %f\n", d); 
+    return NULL;
 }
 
 struct ast * newcmp(int cmptype, struct ast *l, struct ast *r) {
-    struct ast *a = malloc(sizeof(struct ast));
-
-    if (!a) {
-        yyerror("out of space");
-        exit(0);
-    }
-    a->nodetype = '0' + cmptype;
-    a->l = l;
-    a->r = r;
-    return a;
+    printf("NEW CMP (cmptype, l, r)\n Node type: %c\n", cmptype); 
+    return NULL;
 }
 
 struct ast *newref(struct symbol *s) {
+    printf("NEW REF\nSYMBOL NAME %s\n", s->name); 
     return NULL;
 }
 
 struct ast *newasgn(struct symbol *s, struct ast *v) {
+    printf("NEW ASGN (symbol, value)\nsymbol name: %s\n", s->name); 
     return NULL;
 }
 
@@ -114,15 +91,13 @@ void yyerror(char *s, ...)
 {
     va_list ap;
     va_start(ap, s);
-
     fprintf(stderr, "%d: error: ", yylineno);
     vfprintf(stderr, s, ap);
-fprintf(stderr, "\n");
+    fprintf(stderr, "\n");
 }
 
 int main()
 {
-    printf("> "); 
     return yyparse();
 }
 
