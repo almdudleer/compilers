@@ -25,3 +25,5 @@ double eval(struct ast *);
 /* delete and free an AST */
 void treefree(struct ast *);
 
+struct symbol *lookup(char*);
+

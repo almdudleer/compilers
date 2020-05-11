@@ -84,6 +84,10 @@ void treefree(struct ast *a)
     }
 }
 
+struct symbol *lookup(char* s) {
+    return NULL;
+}
+
 void yyerror(char *s, ...)
 {
     va_list ap;

@@ -24,8 +24,9 @@ int yylex();
 %token EOL SEP // markup
 %token EXIT
 
-%nonassoc <fn> CMP
 %right ASN
+%nonassoc <fn> CMP
+%left BITR BITL
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
@@ -60,7 +61,7 @@ list: { $$ = NULL }
 stmt: NAME ASN exp { }
     | IF '(' exp ')' stmt { }
     | IF '(' exp ')' stmt ELSE stmt { }
-    | EXIT exp
+    | EXIT exp {}
     | composite { }
     | exp { } // ??????????
     ;
@@ -77,8 +78,6 @@ exp: exp CMP exp    { $$ = newcmp($2, $1, $3); }
    | NUM            { $$ = newnum($1); }
    | NAME { $$ = newref($1); }
    | NAME '=' exp   { $$ = newasgn($1, $3); }
-   | FUNC '(' explist ')' { $$ = newfunc($1, $3); }
-   | NAME '(' explist ')' { $$ = newcall($1, $3); }
    | exp BITR exp    { $$ = newast('l', $1, $3); }
    | exp BITL exp    { $$ = newast('r', $1, $3); }
    ;
