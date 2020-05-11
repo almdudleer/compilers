@@ -22,16 +22,19 @@ int yylex();
 %token ASN // assignment
 %token EOL SEP // markup
 
-%type <a> exp stmt list
+%type <a> exp stmt list composite
+%type <sl> symlist
+
+%start root
 
 %%
 
 root: 
-    | VAR symlist BEG list END {
-                                        printf("= %8.4g\n", eval($2));
-                                        treefree($2);
+    | VAR symlist composite    {
+                                    printf("= %8.4g\n", eval($2));
+                                    treefree($2);
                                }
-    | BEG list END { }
+    | composite { }
     ;
 
 symlist: NAME { }
