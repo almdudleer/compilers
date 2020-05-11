@@ -40,17 +40,16 @@ root: program {
               }
     ;
 
-program: VAR symlist composite { }
-    | composite { }
+program: VAR symlist composite { $$ = newrt('r', $2, $3); }
+    | composite { $$ = newrt('r', NULL, $1); }
     ;
 
 
-symlist: NAME { }
-       | NAME ',' symlist { }
+symlist: NAME { $$ = newsymlist($1, NULL); }
+       | NAME ',' symlist { $$ = newsymlist($1, $3); }
        ;
 
 list: { $$ = NULL; }
-    | stmt { }
     | stmt SEP list { if ($3 == NULL)
                           $$ = $1;
                       else
@@ -58,11 +57,11 @@ list: { $$ = NULL; }
                     }
     ;
 
-stmt: IF '(' exp ')' stmt { }
-    | IF '(' exp ')' stmt ELSE stmt { }
-    | EXIT '(' exp ')' { }
-    | composite { }
-    | exp { } // ??????????
+stmt: IF '(' exp ')' stmt { $$ = newflow('I', $3, $5, NULL); }
+    | IF '(' exp ')' stmt ELSE stmt { $$ = newflow ('I', $3, $5, $7); }
+    | EXIT '(' exp ')' { $$ = newast('E', $3, NULL); }
+    | composite { $$ = newast('c', $1, NULL); }
+    | exp
     ;
 
 composite: BEG list END { };
