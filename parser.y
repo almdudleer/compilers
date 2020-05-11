@@ -10,6 +10,7 @@ int yylex();
         double d;
         struct symbol *s;
         struct symlist *sl;
+        int fn;
     }
 
 
@@ -21,19 +22,25 @@ int yylex();
 %token CMP // comparison
 %token ASN // assignment
 %token EOL SEP // markup
+%token EXIT
+
+%nonassoc <fn> CMP
+%right ASN
+%left '+' '-'
+%left '*' '/'
+%nonassoc UMINUS
 
 %type <a> exp stmt list composite
 %type <sl> symlist
 
 %start root
-
 %%
 
 root: 
-    | VAR symlist composite    {
-                                    printf("= %8.4g\n", eval($2));
-                                    treefree($2);
-                               }
+    | VAR symlist composite {
+                                 printf("= %8.4g\n", eval($2));
+                                 treefree($2);
+                            }
     | composite { }
     ;
 
@@ -51,8 +58,9 @@ list: { $$ = NULL }
     ;
 
 stmt: NAME ASN exp { }
-    | IF "(" exp ")" stmt { }
-    | IF "(" exp ")" stmt ELSE stmt { }
+    | IF '(' exp ')' stmt { }
+    | IF '(' exp ')' stmt ELSE stmt { }
+    | EXIT exp
     | composite { }
     | exp { } // ??????????
     ;
