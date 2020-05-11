@@ -8,5 +8,5 @@ y.tab.c:
 	bison -dy parser.y
 
 clean: 
-	rm comp y.tab.c y.tab.h lex.yy.c 2>/dev/null
+	rm comp y.output y.tab.c y.tab.h lex.yy.c 2>/dev/null
 
