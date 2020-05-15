@@ -2,7 +2,11 @@
 #  include <stdio.h>
 #  include <stdlib.h>
 #  include <stdarg.h>
+#  include <string.h>
 #  include "funcs.h"
+
+#define HASHSIZE 1000
+struct symbol symbolHashTable[HASHSIZE];
 
 int yyparse (void);
 
@@ -98,10 +102,6 @@ void treefree(struct ast *a)
 //    }
 }
 
-struct symbol *lookup(char* s) {
-    return NULL;
-}
-
 void yyerror(char *s, ...)
 {
     va_list ap;
@@ -109,6 +109,37 @@ void yyerror(char *s, ...)
     fprintf(stderr, "%d: error: ", yylineno);
     vfprintf(stderr, s, ap);
     fprintf(stderr, "\n");
+}
+
+static unsigned getHash(char *sym)
+{
+    unsigned int hash = 0;
+    unsigned elem;
+    while(elem = *sym++) { 
+        hash = hash*9 ^ elem;
+    }
+    return hash;
+}
+
+struct symbol *lookup(char* s)
+{
+    struct symbol *symbolPtr = & symbolHashTable[getHash(s) % HASHSIZE];
+    int i = HASHSIZE;
+    while(i-- >= 0) {
+        if(symbolPtr->name && !strcmp(symbolPtr->name, s)) { 
+            return symbolPtr;
+        }
+        if(!symbolPtr->name) {
+            symbolPtr->name = strdup(s);
+            symbolPtr->value = 0;
+            return symbolPtr;
+        }
+        if(symbolPtr++ >= symbolHashTable + HASHSIZE) {
+            symbolPtr = symbolHashTable;
+        }
+    }
+    fprintf(stderr, "Overflow of hash table of symbols.\n");
+    exit(1);
 }
 
 int main()

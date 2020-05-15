@@ -36,6 +36,7 @@ struct symlist {
     struct symlist *next;
 };
 
+
 /* build an AST */
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
 struct ast *newnum(double d);
