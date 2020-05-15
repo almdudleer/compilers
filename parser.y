@@ -18,8 +18,9 @@ int yylex();
 %token <d> NUM // number
 %token <s> NAME // variable
 %token IF ELSE BEG END VAR // keywords
-%token EOL SEP // markup
+%token SEP // markup
 %token EXIT
+%token ','
 
 %nonassoc <fn> CMP
 %right ASN

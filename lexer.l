@@ -13,6 +13,7 @@ EXP ([Ee][-+]?[0-9]+)
 ":="                                              { return ASN; }
 ">>"                                              { return BITR; }
 "<<"                                              { return BITL; }
+"," |
 "+" |
 "-" |
 "*" |
@@ -26,12 +27,12 @@ EXP ([Ee][-+]?[0-9]+)
 ("VAR"|"var"|"Var")                               { return VAR; }
 [0-9]+"."[0-9]*{EXP}? |
 "."?[0-9]+{EXP}?                                  { yylval.d = atof(yytext); return NUM; }
-\n                                                { return EOL; }
-","                                               { return SEP; }
+";"                                               { return SEP; }
 ">"                                               { yylval.fn = 1; return CMP; }
 "<"                                               { yylval.fn = 2; return CMP; }
 "="                                               { yylval.fn = 3; return CMP; }
 [ \t]                                             { /* ignore white space */ }
+\n                                                { }
 [a-zA-Z_][a-zA-Z0-9_]*                            { yylval.s = lookup(yytext); return NAME; }
 .                                                 { yyerror("Mystery character %c\n", *yytext); }
 %%
