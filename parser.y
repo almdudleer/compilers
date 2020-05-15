@@ -80,8 +80,8 @@ exp: exp CMP exp        { $$ = newcmp($2, $1, $3); }
    | NAME ASN exp       { $$ = newasgn($1, $3); }
    | NAME               { $$ = newref($1); }
    | NUM                { $$ = newnum($1); }
-   | exp BITR exp       { $$ = newast('l', $1, $3); }
-   | exp BITL exp       { $$ = newast('r', $1, $3); }
+   | exp BITR exp       { $$ = newast('r', $1, $3); }
+   | exp BITL exp       { $$ = newast('l', $1, $3); }
    ;
 %%
 
