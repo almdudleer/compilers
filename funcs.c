@@ -33,6 +33,20 @@ struct ast *newasgn(struct symbol *s, struct ast *v) {
     return NULL;
 }
 
+struct symlist *newsymlist(struct symbol *sym, struct symlist *next) {
+    printf("NEW SYMLIST (symbol, next)\n");
+    return NULL;
+}
+
+struct ast *newrt(struct symlist *syml, struct ast *l) {
+    printf("NEW RT (symlist, ast)\n");
+    return NULL;
+}
+
+struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *tr) {
+    printf("NEW flow (nodetype, cond, l, r)\nNode type: %c\n", nodetype);
+    return NULL;
+}
 
 double eval(struct ast *a)
 {

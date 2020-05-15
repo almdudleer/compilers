@@ -40,8 +40,8 @@ root: program {
               }
     ;
 
-program: VAR symlist composite { $$ = newrt('r', $2, $3); }
-    | composite { $$ = newrt('r', NULL, $1); }
+program: VAR symlist composite { $$ = newrt($2, $3); }
+    | composite { $$ = newrt(NULL, $1); }
     ;
 
 
@@ -64,7 +64,7 @@ stmt: IF '(' exp ')' stmt { $$ = newflow('I', $3, $5, NULL); }
     | exp
     ;
 
-composite: BEG list END { };
+composite: BEG list END { $$ = newast('d', $2, NULL); };
 
 exp: exp CMP exp        { $$ = newcmp($2, $1, $3); }
    | exp '+' exp        { $$ = newast('+', $1,$3); }
