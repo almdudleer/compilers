@@ -21,12 +21,15 @@ int yylex();
 %token EOL SEP // markup
 %token EXIT
 
-%right ASN
 %nonassoc <fn> CMP
+%right ASN
 %left BITR BITL
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
+
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
 
 %type <a> exp stmt list composite program
 %type <sl> symlist
@@ -57,7 +60,7 @@ list: { $$ = NULL; }
                     }
     ;
 
-stmt: IF '(' exp ')' stmt { $$ = newflow('I', $3, $5, NULL); }
+stmt: IF '(' exp ')' stmt %prec LOWER_THAN_ELSE{ $$ = newflow('I', $3, $5, NULL); }
     | IF '(' exp ')' stmt ELSE stmt { $$ = newflow ('I', $3, $5, $7); }
     | EXIT '(' exp ')' { $$ = newast('E', $3, NULL); }
     | composite { $$ = newast('c', $1, NULL); }
