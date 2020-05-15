@@ -50,51 +50,52 @@ struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *
 
 double eval(struct ast *a)
 {
-    double v;
+    printf("EVAL\n");
+    double v = 1.0;
 
-    switch(a->nodetype) {
-        case 'K': v = ((struct numval *)a)->number; break;
-
-        case '+': v = eval(a->l) + eval(a->r); break;
-        case '-': v = eval(a->l) - eval(a->r); break;
-        case '*': v = eval(a->l) * eval(a->r); break;
-        case '/': v = eval(a->l) / eval(a->r); break;
-        case '1': v = eval(a->l) > eval(a->r); break;
-        case '2': v = eval(a->l) < eval(a->r); break;
-        case '3': v = eval(a->l) == eval(a->r); break;
-        case 'l': v = (int) eval(a->l) << (int) eval(a->r); break;
-        case 'r': v = (int) eval(a->l) >> (int) eval(a->r); break;
-        case 'M': v = -eval(a->l); break;
-        default: printf("internal error: bad node %c\n", a->nodetype);
-    }
-    
-    printf("Evaluated node type: %c\nEvaluated value: %f\n", a->nodetype, v);
+//    switch(a->nodetype) {
+//        case 'K': v = ((struct numval *)a)->number; break;
+//        case '+': v = eval(a->l) + eval(a->r); break;
+//        case '-': v = eval(a->l) - eval(a->r); break;
+//        case '*': v = eval(a->l) * eval(a->r); break;
+//        case '/': v = eval(a->l) / eval(a->r); break;
+//        case '1': v = eval(a->l) > eval(a->r); break;
+//        case '2': v = eval(a->l) < eval(a->r); break;
+//        case '3': v = eval(a->l) == eval(a->r); break;
+//        case 'l': v = (int) eval(a->l) << (int) eval(a->r); break;
+//        case 'r': v = (int) eval(a->l) >> (int) eval(a->r); break;
+//        case 'M': v = -eval(a->l); break;
+//        default: printf("internal error: bad node %c\n", a->nodetype);
+//    }
+//    
+//    printf("Evaluated node type: %c\nEvaluated value: %f\n", a->nodetype, v);
 
     return v;
 }
 
 void treefree(struct ast *a)
 {
-    switch(a->nodetype) {
-
-         /* two subtrees */
-         case '+':
-         case '-':
-         case '*':
-         case '/':
-            treefree(a->r);
-
-         /* one subtree */
-         case 'M':
-            treefree(a->l);
-
-         /* no subtree */
-         case 'C':
-            free(a); 
-            break;
-
-         default: printf("internal error: free bad node %c\n", a->nodetype);
-    }
+    printf("TREE FREE\n");
+//    switch(a->nodetype) {
+//
+//         /* two subtrees */
+//         case '+':
+//         case '-':
+//         case '*':
+//         case '/':
+//            treefree(a->r);
+//
+//         /* one subtree */
+//         case 'M':
+//            treefree(a->l);
+//
+//         /* no subtree */
+//         case 'C':
+//            free(a); 
+//            break;
+//
+//         default: printf("internal error: free bad node %c\n", a->nodetype);
+//    }
 }
 
 struct symbol *lookup(char* s) {
