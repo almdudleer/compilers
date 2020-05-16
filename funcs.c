@@ -94,7 +94,7 @@ struct symlist* newsymlist(struct symbol* sym, struct symlist* next) {
 }
 
 struct ast* newflow(int nodetype, struct ast* cond, struct ast* bi, struct ast* be) {
-    printf("NEW flow (nodetype, cond, l, r); flow type: %c\n", nodetype);
+    printf("NEW flow (%d, cond: %p, if: %p, else: %p)\n", nodetype, cond, bi, be);
     struct flow* node = malloc(sizeof(struct flow));
     if (node == NULL) {
         yyerror("out of memory");
@@ -206,7 +206,7 @@ void print_tree(struct ast* a, int level) {
             break;
         case 'I':
             printf("If statement with");
-            if (((struct flow *)a)->doelse != NULL) {
+            if (((struct flow *)a)->doelse == NULL) {
                 printf("out");
             }
             printf(" else part (condition type %c; if branch type %c", ((struct flow *)a)->cond->nodetype, ((struct flow *)a)->doif->nodetype);
