@@ -54,7 +54,7 @@ struct ast *newrt(struct symlist *syml, struct ast *l);
 struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *tr);
 
 /* print AST */
-void printTree(struct ast * a, int level);
+void print_tree(struct ast * a, int level);
 
 /* evaluate an AST */
 double eval(struct ast *);

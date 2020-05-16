@@ -57,7 +57,7 @@ struct ast* newnum(double d)
 }
 
 struct ast* newcmp(int cmptype, struct ast* l, struct ast* r) {
-    printf("NEW CMP (cmptype, l, r); CMP type: %c\n", cmptype); 
+    printf("NEW CMP (cmptype, l, r); CMP type: %i\n", cmptype); 
     struct ast* node = malloc(sizeof(struct ast));
     if (node == NULL) {
         yyerror("out of memory");
@@ -171,7 +171,7 @@ void treefree(struct ast* a)
 //    }
 }
 
-void printTree(struct ast* a, int level) {
+void print_tree(struct ast* a, int level) {
     printf("%i. ", level);
     level++;
 
@@ -189,44 +189,44 @@ void printTree(struct ast* a, int level) {
             break;
         case '=': 
             printf("Asign %s := (value type %c)\n", ((struct symasgn *)a)->s->name, ((struct symasgn *)a)->v->nodetype);
-            printTree(((struct symasgn *)a)->v, level);
+            print_tree(((struct symasgn *)a)->v, level);
             break;
         case '+':
         case '-':
         case '*':
         case '/':
             printf("Binary Operation %c (left value type %c, right value type %c)\n", a->nodetype, a->l->nodetype, a->r->nodetype);
-            printTree(a->l, level);
-            printTree(a->r, level);
+            print_tree(a->l, level);
+            print_tree(a->r, level);
             break;
         case '1':
             printf("Binary Operation > (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
-            printTree(a->l, level);
-            printTree(a->r, level);
+            print_tree(a->l, level);
+            print_tree(a->r, level);
             break;
         case '2':
             printf("Binary Operation < (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
-            printTree(a->l, level);
-            printTree(a->r, level);
+            print_tree(a->l, level);
+            print_tree(a->r, level);
             break;
         case '3':
             printf("Binary Operation == (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
-            printTree(a->l, level);
-            printTree(a->r, level);
+            print_tree(a->l, level);
+            print_tree(a->r, level);
             break;
         case 'l':
             printf("Binary Operation << (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
-            printTree(a->l, level);
-            printTree(a->r, level);
+            print_tree(a->l, level);
+            print_tree(a->r, level);
             break;
         case 'r':
             printf("Binary Operation >> (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
-            printTree(a->l, level);
-            printTree(a->r, level);
+            print_tree(a->l, level);
+            print_tree(a->r, level);
             break;
         case 'M':
             printf("Unary Minus (argument type %c)\n", a->l->nodetype);
-            printTree(a->l, level);
+            print_tree(a->l, level);
             break;
         case 'I':
             printf("If statement with");
@@ -238,22 +238,22 @@ void printTree(struct ast* a, int level) {
                 printf("; else branch type %c", ((struct flow *)a)->doelse->nodetype);
             }
             printf(")\n");
-            printTree(((struct flow *)a)->cond, level);
-            printTree(((struct flow *)a)->doif, level);
+            print_tree(((struct flow *)a)->cond, level);
+            print_tree(((struct flow *)a)->doif, level);
             if (((struct flow *)a)->doelse != NULL) {
-                printTree(((struct flow *)a)->doelse, level);
+                print_tree(((struct flow *)a)->doelse, level);
             }
             break;
-        case 'd':
+        case 'c':
             printf("Composite type (Begin ... End)\n");
             if (a->l != NULL) {
-                printTree(a->l, level);
+                print_tree(a->l, level);
             }
             break;
         case 'L':
             printf("Sequense of several commands\n");
-            printTree(a->l, level);
-            printTree(a->r, level);
+            print_tree(a->l, level);
+            print_tree(a->r, level);
             break;
         default:
             printf("Bad nodetype %c\n", a->nodetype);

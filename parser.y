@@ -39,7 +39,7 @@ int yylex();
 %%
 
 root: program { 
-                    printTree($1, 1);
+                    print_tree($1, 1);
                     printf("= %8.4g\n", eval($1));
                     treefree($1);
                     exit(0);
@@ -66,11 +66,11 @@ list: { $$ = NULL; }
 stmt: IF '(' exp ')' stmt %prec LOWER_THAN_ELSE{ $$ = newflow('I', $3, $5, NULL); }
     | IF '(' exp ')' stmt ELSE stmt { $$ = newflow ('I', $3, $5, $7); }
     | EXIT '(' exp ')' { $$ = newast('E', $3, NULL); }
-    | composite { $$ = newast('c', $1, NULL); }
+    | composite
     | exp
     ;
 
-composite: BEG list END { $$ = newast('d', $2, NULL); };
+composite: BEG list END { $$ = newast('c', $2, NULL); };
 
 exp: exp CMP exp        { $$ = newcmp($2, $1, $3); }
    | exp '+' exp        { $$ = newast('+', $1,$3); }
