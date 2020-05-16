@@ -1,6 +1,9 @@
 comp: funcs.c funcs.h lex.yy.c y.tab.c 
 	gcc -o comp funcs.c lex.yy.c y.tab.c -lfl
 
+comp_debug: funcs.c funcs.h lex.yy.c y.tab.c
+	gcc -o comp -DDEBUG funcs.c lex.yy.c y.tab.c -lfl
+
 lex.yy.c: lexer.l y.tab.c
 	flex lexer.l
 
