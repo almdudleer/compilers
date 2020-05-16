@@ -56,19 +56,6 @@ struct ast* newnum(double d)
     return (struct ast*) leaf;
 }
 
-struct ast* newcmp(int cmptype, struct ast* l, struct ast* r) {
-    printf("NEW CMP (cmptype, l, r); CMP type: %i\n", cmptype); 
-    struct ast* node = malloc(sizeof(struct ast));
-    if (node == NULL) {
-        yyerror("out of memory");
-        exit(1);
-    }
-    node->nodetype = cmptype;
-    node->l = l;
-    node->r = r;
-    return (struct ast*) node;
-}
-
 struct ast* newref(struct symbol* s) {
     printf("NEW REF (%s)\n", s->name); 
     struct symref* node = malloc(sizeof(struct symref));
@@ -76,7 +63,7 @@ struct ast* newref(struct symbol* s) {
         yyerror("out of memory");
         exit(1);
     }
-    node->nodetype = 'N';
+    node->nodetype = 'R';
     node->s = s;
     return (struct ast*) node;
 }
@@ -88,7 +75,7 @@ struct ast* newasgn(struct symbol* s, struct ast* v) {
         yyerror("out of memory");
         exit(1);
     }
-    node->nodetype = '=';
+    node->nodetype = 'A';
     node->s = s;
     node->v = v;
     return (struct ast*) node;
@@ -181,36 +168,25 @@ void print_tree(struct ast* a, int level) {
     }
 
     switch(a->nodetype) {
-        case 'N': 
+        case 'R': 
             printf("Symbol %s\n", ((struct symref *)a)->s->name);
             break;
         case 'n':
             printf("Number %f\n", ((struct numval *)a)->number);
             break;
-        case '=': 
-            printf("Asign %s := (value type %c)\n", ((struct symasgn *)a)->s->name, ((struct symasgn *)a)->v->nodetype);
+        case 'A': 
+            printf("Assign %s := (value type %c)\n", ((struct symasgn *)a)->s->name, ((struct symasgn *)a)->v->nodetype);
+            printf("%i. Variable name %s", level, ((struct symasgn *)a)->s->name);
             print_tree(((struct symasgn *)a)->v, level);
             break;
         case '+':
         case '-':
         case '*':
         case '/':
+        case '>':
+        case '<':
+        case '=':
             printf("Binary Operation %c (left value type %c, right value type %c)\n", a->nodetype, a->l->nodetype, a->r->nodetype);
-            print_tree(a->l, level);
-            print_tree(a->r, level);
-            break;
-        case '1':
-            printf("Binary Operation > (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
-            print_tree(a->l, level);
-            print_tree(a->r, level);
-            break;
-        case '2':
-            printf("Binary Operation < (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
-            print_tree(a->l, level);
-            print_tree(a->r, level);
-            break;
-        case '3':
-            printf("Binary Operation == (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
             print_tree(a->l, level);
             print_tree(a->r, level);
             break;

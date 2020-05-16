@@ -10,7 +10,6 @@ int yylex();
         double d;
         struct symbol *s;
         struct symlist *sl;
-        int fn;
     }
 
 
@@ -22,7 +21,7 @@ int yylex();
 %token EXIT
 %token ','
 
-%nonassoc <fn> CMP
+%nonassoc '>' '<' '='
 %right ASN
 %left BITR BITL
 %left '+' '-'
@@ -72,11 +71,13 @@ stmt: IF '(' exp ')' stmt %prec LOWER_THAN_ELSE{ $$ = newflow('I', $3, $5, NULL)
 
 composite: BEG list END { $$ = newast('c', $2, NULL); };
 
-exp: exp CMP exp        { $$ = newcmp($2, $1, $3); }
-   | exp '+' exp        { $$ = newast('+', $1,$3); }
-   | exp '-' exp        { $$ = newast('-', $1,$3);}
-   | exp '*' exp        { $$ = newast('*', $1,$3); }
-   | exp '/' exp        { $$ = newast('/', $1,$3); }
+exp: exp '>' exp        { $$ = newast('>', $1, $3); }
+   | exp '<' exp        { $$ = newast('<', $1, $3); }  
+   | exp '=' exp        { $$ = newast('=', $1, $3); } 
+   | exp '+' exp        { $$ = newast('+', $1, $3); }
+   | exp '-' exp        { $$ = newast('-', $1, $3);}
+   | exp '*' exp        { $$ = newast('*', $1, $3); }
+   | exp '/' exp        { $$ = newast('/', $1, $3); }
    | '(' exp ')'        { $$ = $2; }
    | '-' exp %prec UMINUS { $$ = newast('M', $2, NULL); }
    | NAME ASN exp       { $$ = newasgn($1, $3); }

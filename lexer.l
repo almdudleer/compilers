@@ -17,6 +17,9 @@ EXP ([Ee][-+]?[0-9]+)
 "+" |
 "-" |
 "*" |
+">" |
+"<" |
+"=" |
 "/" |
 "(" |
 ")"                                               { return yytext[0]; }
@@ -28,9 +31,6 @@ EXP ([Ee][-+]?[0-9]+)
 [0-9]+"."[0-9]*{EXP}? |
 "."?[0-9]+{EXP}?                                  { yylval.d = atof(yytext); return NUM; }
 ";"                                               { return SEP; }
-">"                                               { yylval.fn = 1; return CMP; }
-"<"                                               { yylval.fn = 2; return CMP; }
-"="                                               { yylval.fn = 3; return CMP; }
 [ \t\n]                                             { /* ignore white space */ }
 [a-zA-Z_][a-zA-Z0-9_]*                            { yylval.s = lookup(yytext); return NAME; }
 .                                                 { yyerror("Mystery character %c\n", *yytext); }

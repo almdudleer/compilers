@@ -46,7 +46,6 @@ struct flow {
 /* build an AST */
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
 struct ast *newnum(double d);
-struct ast *newcmp(int cmptype, struct ast *l, struct ast *r);
 struct ast *newref(struct symbol *s);
 struct ast *newasgn(struct symbol *s, struct ast *v);
 struct symlist *newsymlist(struct symbol *sym, struct symlist *next);
