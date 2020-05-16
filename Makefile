@@ -4,7 +4,7 @@ comp: funcs.c lex.yy.c y.tab.c
 lex.yy.c: lexer.l y.tab.c
 	flex lexer.l
 
-y.tab.c: 
+y.tab.c: parser.y
 	bison -dy parser.y
 
 clean: 

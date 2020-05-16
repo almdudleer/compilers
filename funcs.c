@@ -1,67 +1,100 @@
-
-#  include <stdio.h>
-#  include <stdlib.h>
-#  include <stdarg.h>
-#  include <string.h>
-#  include "funcs.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include "funcs.h"
 
 #define HASHSIZE 1000
+
 struct symbol symbolHashTable[HASHSIZE];
 
 int yyparse (void);
 
-struct ast * newast(int nodetype, struct ast *l, struct ast *r)
-{
-    printf("NEW AST (nodetype, left, right)\n Node type: %c\n", nodetype);
-    return NULL;
+struct ast* newrt(struct symlist *syml, struct ast *l) {
+    printf("NEW RT (%p, %p)\n", syml, l);
+    while (syml != NULL) {
+        printf("\tdefine symbol: %s\n", syml->sym->name);
+        syml = syml->next;
+    }
+    return l;
 }
 
-struct ast * newnum(double d)
+struct ast* newast(int nodetype, struct ast* l, struct ast* r)
 {
-    printf("NEW NUM\n NUMBER: %f\n", d); 
-    return NULL;
+//    printf("NEW AST (%c, %c, %c)\n", nodetype, l->nodetype, r->nodetype);
+    int ltype;
+    int rtype;
+
+    if (l == NULL) ltype = 0;
+    else ltype = l->nodetype;
+
+    if (r == NULL) rtype = 0;
+    else rtype = r->nodetype;
+
+    printf("NEW AST (%c, r: %c, l: %c)\n", nodetype, ltype, rtype);
+
+    struct ast* node = malloc(sizeof(struct ast));
+    if (node == NULL) {
+        yyerror("out of memory");
+        exit(1);
+    }
+    node->nodetype = nodetype;
+    node->l = l;
+    node->r = r;
+    return node;
 }
 
-struct ast * newcmp(int cmptype, struct ast *l, struct ast *r) {
+struct ast* newnum(double d)
+{
+    printf("NEW NUM (%f)\n", d); 
+    struct numval* leave = malloc(sizeof(struct numval));
+    leave->nodetype = 'n';
+    leave->number = d;
+    return (struct ast*) leave;
+}
+
+struct ast* newcmp(int cmptype, struct ast* l, struct ast* r) {
     printf("NEW CMP (cmptype, l, r)\n Node type: %c\n", cmptype); 
     return NULL;
 }
 
-struct ast *newref(struct symbol *s) {
-    printf("NEW REF\nSYMBOL NAME %s\n", s->name); 
+struct ast* newref(struct symbol* s) {
+    printf("NEW REF (%s)\n", s->name); 
     return NULL;
 }
 
-struct ast *newasgn(struct symbol *s, struct ast *v) {
-    printf("NEW ASGN (symbol, value)\nsymbol name: %s\n", s->name); 
+struct ast* newasgn(struct symbol* s, struct ast* v) {
+    printf("NEW ASGN (%s, value)\n", s->name); 
     return NULL;
 }
 
-struct symlist *newsymlist(struct symbol *sym, struct symlist *next) {
-    printf("NEW SYMLIST (symbol, next)\n");
-    return NULL;
+struct symlist* newsymlist(struct symbol* sym, struct symlist* next) {
+    struct symlist* sl = malloc(sizeof(struct symlist));
+    if (sl == NULL) {
+        yyerror("out of memory");
+        exit(1);
+    }
+    sl->sym = sym;
+    sl->next = next;
+    printf("NEW SYMLIST (%s, %p)\n", sl->sym->name, (void*)sl->next);
+    return sl;
 }
 
-struct ast *newrt(struct symlist *syml, struct ast *l) {
-    printf("NEW RT (symlist, ast)\n");
-    return NULL;
-}
-
-struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *tr) {
+struct ast* newflow(int nodetype, struct ast* cond, struct ast* tl, struct ast* tr) {
     printf("NEW flow (nodetype, cond, l, r)\nNode type: %c\n", nodetype);
     return NULL;
 }
 
-double eval(struct ast *a)
+double eval(struct ast* a)
 {
     printf("EVAL\n");
     double v = 1.0;
 
 //    switch(a->nodetype) {
-//        case 'K': v = ((struct numval *)a)->number; break;
+//        case 'K': v = ((struct numval* )a)->number; break;
 //        case '+': v = eval(a->l) + eval(a->r); break;
 //        case '-': v = eval(a->l) - eval(a->r); break;
-//        case '*': v = eval(a->l) * eval(a->r); break;
+//        case '*': v = eval(a->l)*  eval(a->r); break;
 //        case '/': v = eval(a->l) / eval(a->r); break;
 //        case '1': v = eval(a->l) > eval(a->r); break;
 //        case '2': v = eval(a->l) < eval(a->r); break;
@@ -77,23 +110,23 @@ double eval(struct ast *a)
     return v;
 }
 
-void treefree(struct ast *a)
+void treefree(struct ast* a)
 {
     printf("TREE FREE\n");
 //    switch(a->nodetype) {
 //
-//         /* two subtrees */
+//         /* two subtrees* /
 //         case '+':
 //         case '-':
 //         case '*':
 //         case '/':
 //            treefree(a->r);
 //
-//         /* one subtree */
+//         /* one subtree* /
 //         case 'M':
 //            treefree(a->l);
 //
-//         /* no subtree */
+//         /* no subtree* /
 //         case 'C':
 //            free(a); 
 //            break;
@@ -102,7 +135,7 @@ void treefree(struct ast *a)
 //    }
 }
 
-void yyerror(char *s, ...)
+void yyerror(char* s, ...)
 {
     va_list ap;
     va_start(ap, s);
@@ -111,19 +144,19 @@ void yyerror(char *s, ...)
     fprintf(stderr, "\n");
 }
 
-static unsigned getHash(char *sym)
+static unsigned getHash(char* sym)
 {
     unsigned int hash = 0;
     unsigned elem;
-    while(elem = *sym++) { 
+    while(elem =* sym++) { 
         hash = hash*9 ^ elem;
     }
     return hash;
 }
 
-struct symbol *lookup(char* s)
+struct symbol* lookup(char* s)
 {
-    struct symbol *symbolPtr = & symbolHashTable[getHash(s) % HASHSIZE];
+    struct symbol* symbolPtr = & symbolHashTable[getHash(s) % HASHSIZE];
     int i = HASHSIZE;
     while(i-- >= 0) {
         if(symbolPtr->name && !strcmp(symbolPtr->name, s)) { 
