@@ -46,14 +46,14 @@ struct ast* newast(int nodetype, struct ast* l, struct ast* r)
 struct ast* newnum(double d)
 {
     printf("NEW NUM (%f)\n", d); 
-    struct numval* leave = malloc(sizeof(struct numval));
-    if (leave == NULL) {
+    struct numval* leaf = malloc(sizeof(struct numval));
+    if (leaf == NULL) {
         yyerror("out of memory");
         exit(1);
     }
-    leave->nodetype = 'n';
-    leave->number = d;
-    return (struct ast*) leave;
+    leaf->nodetype = 'n';
+    leaf->number = d;
+    return (struct ast*) leaf;
 }
 
 struct ast* newcmp(int cmptype, struct ast* l, struct ast* r) {
