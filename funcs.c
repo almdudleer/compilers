@@ -21,7 +21,6 @@ struct ast* newrt(struct symlist *syml, struct ast *l) {
 
 struct ast* newast(int nodetype, struct ast* l, struct ast* r)
 {
-//    printf("NEW AST (%c, %c, %c)\n", nodetype, l->nodetype, r->nodetype);
     int ltype;
     int rtype;
 
@@ -48,24 +47,51 @@ struct ast* newnum(double d)
 {
     printf("NEW NUM (%f)\n", d); 
     struct numval* leave = malloc(sizeof(struct numval));
+    if (leave == NULL) {
+        yyerror("out of memory");
+        exit(1);
+    }
     leave->nodetype = 'n';
     leave->number = d;
     return (struct ast*) leave;
 }
 
 struct ast* newcmp(int cmptype, struct ast* l, struct ast* r) {
-    printf("NEW CMP (cmptype, l, r)\n Node type: %c\n", cmptype); 
-    return NULL;
+    printf("NEW CMP (cmptype, l, r); CMP type: %c\n", cmptype); 
+    struct ast* node = malloc(sizeof(struct ast));
+    if (node == NULL) {
+        yyerror("out of memory");
+        exit(1);
+    }
+    node->nodetype = cmptype;
+    node->l = l;
+    node->r = r;
+    return (struct ast*) node;
 }
 
 struct ast* newref(struct symbol* s) {
     printf("NEW REF (%s)\n", s->name); 
-    return NULL;
+    struct symref* node = malloc(sizeof(struct symref));
+    if (node == NULL) {
+        yyerror("out of memory");
+        exit(1);
+    }
+    node->nodetype = 'N';
+    node->s = s;
+    return (struct ast*) node;
 }
 
 struct ast* newasgn(struct symbol* s, struct ast* v) {
-    printf("NEW ASGN (%s, value)\n", s->name); 
-    return NULL;
+    printf("NEW ASGN (%s, value); Value type: %c\n", s->name, v->nodetype); 
+    struct symasgn* node = malloc(sizeof(struct symasgn));
+    if (node == NULL) {
+        yyerror("out of memory");
+        exit(1);
+    }
+    node->nodetype = '=';
+    node->s = s;
+    node->v = v;
+    return (struct ast*) node;
 }
 
 struct symlist* newsymlist(struct symbol* sym, struct symlist* next) {
@@ -80,9 +106,18 @@ struct symlist* newsymlist(struct symbol* sym, struct symlist* next) {
     return sl;
 }
 
-struct ast* newflow(int nodetype, struct ast* cond, struct ast* tl, struct ast* tr) {
-    printf("NEW flow (nodetype, cond, l, r)\nNode type: %c\n", nodetype);
-    return NULL;
+struct ast* newflow(int nodetype, struct ast* cond, struct ast* bi, struct ast* be) {
+    printf("NEW flow (nodetype, cond, l, r); flow type: %c\n", nodetype);
+    struct flow* node = malloc(sizeof(struct flow));
+    if (node == NULL) {
+        yyerror("out of memory");
+        exit(1);
+    }
+    node->nodetype = nodetype;
+    node->cond = cond;
+    node->doif = bi;
+    node->doelse = be;
+    return (struct ast*) node;
 }
 
 double eval(struct ast* a)
@@ -102,6 +137,7 @@ double eval(struct ast* a)
 //        case 'l': v = (int) eval(a->l) << (int) eval(a->r); break;
 //        case 'r': v = (int) eval(a->l) >> (int) eval(a->r); break;
 //        case 'M': v = -eval(a->l); break;
+//        case ''
 //        default: printf("internal error: bad node %c\n", a->nodetype);
 //    }
 //    
@@ -133,6 +169,93 @@ void treefree(struct ast* a)
 //
 //         default: printf("internal error: free bad node %c\n", a->nodetype);
 //    }
+}
+
+void printTree(struct ast* a, int level) {
+    printf("%i. ", level);
+    level++;
+
+    if(!a) {
+        printf("Tree is empty.\n");
+    }
+
+    switch(a->nodetype) {
+        case 'N': 
+            printf("Symbol %s\n", ((struct symref *)a)->s->name);
+            break;
+        case 'n':
+            printf("Number %f\n", ((struct numval *)a)->number);
+            break;
+        case '=': 
+            printf("Asign %s := (value type %c)\n", ((struct symasgn *)a)->s->name, ((struct symasgn *)a)->v->nodetype);
+            printTree(((struct symasgn *)a)->v, level);
+            break;
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            printf("Binary Operation %c (left value type %c, right value type %c)\n", a->nodetype, a->l->nodetype, a->r->nodetype);
+            printTree(a->l, level);
+            printTree(a->r, level);
+            break;
+        case '1':
+            printf("Binary Operation > (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
+            printTree(a->l, level);
+            printTree(a->r, level);
+            break;
+        case '2':
+            printf("Binary Operation < (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
+            printTree(a->l, level);
+            printTree(a->r, level);
+            break;
+        case '3':
+            printf("Binary Operation == (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
+            printTree(a->l, level);
+            printTree(a->r, level);
+            break;
+        case 'l':
+            printf("Binary Operation << (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
+            printTree(a->l, level);
+            printTree(a->r, level);
+            break;
+        case 'r':
+            printf("Binary Operation >> (left value type %c, right value type %c)\n", a->l->nodetype, a->r->nodetype);
+            printTree(a->l, level);
+            printTree(a->r, level);
+            break;
+        case 'M':
+            printf("Unary Minus (argument type %c)\n", a->l->nodetype);
+            printTree(a->l, level);
+            break;
+        case 'I':
+            printf("If statement with");
+            if (((struct flow *)a)->doelse != NULL) {
+                printf("out");
+            }
+            printf(" else part (condition type %c; if branch type %c", ((struct flow *)a)->cond->nodetype, ((struct flow *)a)->doif->nodetype);
+            if (((struct flow *)a)->doelse != NULL) {
+                printf("; else branch type %c", ((struct flow *)a)->doelse->nodetype);
+            }
+            printf(")\n");
+            printTree(((struct flow *)a)->cond, level);
+            printTree(((struct flow *)a)->doif, level);
+            if (((struct flow *)a)->doelse != NULL) {
+                printTree(((struct flow *)a)->doelse, level);
+            }
+            break;
+        case 'd':
+            printf("Composite type (Begin ... End)\n");
+            printTree(a->l, level);
+            break;
+        case 'L':
+            printf("Sequense of several commands\n");
+            printTree(a->l, level);
+            printTree(a->r, level);
+            break;
+        default:
+            printf("Bad nodetype %c\n", a->nodetype);
+            return;
+    }
 }
 
 void yyerror(char* s, ...)

@@ -39,6 +39,7 @@ int yylex();
 %%
 
 root: program { 
+                    printTree($1, 1);
                     printf("= %8.4g\n", eval($1));
                     treefree($1);
                     exit(0);
