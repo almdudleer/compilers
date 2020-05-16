@@ -177,6 +177,7 @@ void printTree(struct ast* a, int level) {
 
     if(!a) {
         printf("Tree is empty.\n");
+        return;
     }
 
     switch(a->nodetype) {
@@ -245,7 +246,9 @@ void printTree(struct ast* a, int level) {
             break;
         case 'd':
             printf("Composite type (Begin ... End)\n");
-            printTree(a->l, level);
+            if (a->l != NULL) {
+                printTree(a->l, level);
+            }
             break;
         case 'L':
             printf("Sequense of several commands\n");
