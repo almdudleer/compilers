@@ -169,8 +169,16 @@ void print_tree(struct ast* a, int level) {
     }
 
     switch(a->nodetype) {
+        case 'P':
+            printf("Program root\n");
+            print_tree(a->l, level);
+            print_tree(a->r, level);
+            break;
+        case 'D':
+            printf("Symbols definition\n");
+            break;
         case 'R': 
-            printf("Symbol %s\n", ((struct symref *)a)->sym->name);
+            printf("Reference to %s\n", ((struct symref *)a)->sym->name);
             break;
         case 'n':
             printf("Number %f\n", ((struct numval *)a)->number);
@@ -274,7 +282,7 @@ struct symbol* lookup(char* s)
     exit(1);
 }
 
-void dodef(struct symlist* syml) {
+struct ast* newdef(struct symlist* syml) {
     while (syml != NULL) {
         printf("\tdefine symbol: %s\n", syml->symname);
         struct symbol* sym = lookup(syml->symname);
@@ -286,6 +294,10 @@ void dodef(struct symlist* syml) {
         sym->value = 0;
         syml = syml->next;
     }
+    struct symdef* node = malloc(sizeof(struct symdef));
+    node->nodetype = 'D';
+    node->syml = syml;
+    return (struct ast*) node;
 }
 
 int main()

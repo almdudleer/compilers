@@ -30,9 +30,14 @@ struct symasgn {
     struct ast *newval; /* value */
 };
 
+struct symdef {
+    int nodetype; /* type D */
+    struct symlist* syml;
+};
+
 struct symlist {
     char* symname;
-    struct symlist *next;
+    struct symlist* next;
 };
 
 struct flow {
@@ -50,6 +55,7 @@ struct ast *newref(char* symname);
 struct ast *newasgn(char* symname, struct ast *newval);
 struct symlist *newsymlist(char* symname, struct symlist *next);
 struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *tr);
+struct ast* newdef(struct symlist* syml);
 
 /* print AST */
 void print_tree(struct ast * a, int level);
@@ -59,8 +65,6 @@ double eval(struct ast *);
 
 /* delete and free an AST */
 void treefree(struct ast *);
-
-void dodef(struct symlist* syml);
 
 struct symbol *lookup(char*);
 

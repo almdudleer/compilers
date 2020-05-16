@@ -31,22 +31,24 @@ int yylex();
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
-%type <a> exp stmt list composite 
+%type <a> exp stmt list composite program
 %type <sl> symlist
 
 %start root
 %%
 
-root: root composite { 
-                        print_tree($2, 1);
-                        printf("= %8.4g\n", eval($2));
-                        treefree($2);
-                        exit(0);
-                     }    
-    | VAR symlist { dodef($2); }
-    | { /* Epsilon */ }
-    ;
+root: program { 
+                   print_tree($1, 1);
+                   printf("= %8.4g\n", eval($1));
+                   treefree($1);
+                   exit(0);
+              };
 
+
+program: program composite { $$ = newast('P', $1, $2); }
+       | VAR symlist { $$ = newdef($2); }
+       | { $$ = NULL; }
+       ;
 
 symlist: NAME { $$ = newsymlist($1, NULL); }
        | NAME ',' symlist { $$ = newsymlist($1, $3); }
