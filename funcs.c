@@ -10,15 +10,6 @@ struct symbol symbolHashTable[HASHSIZE];
 
 int yyparse (void);
 
-struct ast* newrt(struct symlist *syml, struct ast *l) {
-    printf("NEW RT (%p, %p)\n", syml, l);
-    while (syml != NULL) {
-        printf("\tdefine symbol: %s\n", syml->sym->name);
-        syml = syml->next;
-    }
-    return l;
-}
-
 struct ast* newast(int nodetype, struct ast* l, struct ast* r)
 {
     int ltype;
@@ -56,40 +47,50 @@ struct ast* newnum(double d)
     return (struct ast*) leaf;
 }
 
-struct ast* newref(struct symbol* s) {
-    printf("NEW REF (%s)\n", s->name); 
+struct ast* newref(char* symname) {
+    printf("NEW REF (%s)\n", symname); 
+    struct symbol* sym = lookup(symname);
+    if (sym->name == NULL) {
+        yyerror("Use of undeclared identifier: %s", symname);
+        exit(1);
+    }
     struct symref* node = malloc(sizeof(struct symref));
     if (node == NULL) {
         yyerror("out of memory");
         exit(1);
     }
     node->nodetype = 'R';
-    node->s = s;
+    node->sym = sym;
     return (struct ast*) node;
 }
 
-struct ast* newasgn(struct symbol* s, struct ast* v) {
-    printf("NEW ASGN (%s, value); Value type: %c\n", s->name, v->nodetype); 
+struct ast* newasgn(char* symname, struct ast* newval) {
+    printf("NEW ASGN (%s, value); Value type: %c\n", symname, newval->nodetype); 
+    struct symbol* sym = lookup(symname);
+    if (sym->name == NULL) {
+        yyerror("Use of undeclared identifier: %s", symname);
+        exit(1);
+    }
     struct symasgn* node = malloc(sizeof(struct symasgn));
     if (node == NULL) {
         yyerror("out of memory");
         exit(1);
     }
     node->nodetype = 'A';
-    node->s = s;
-    node->v = v;
+    node->sym = sym;
+    node->newval = newval;
     return (struct ast*) node;
 }
 
-struct symlist* newsymlist(struct symbol* sym, struct symlist* next) {
+struct symlist* newsymlist(char* symname, struct symlist* next) {
     struct symlist* sl = malloc(sizeof(struct symlist));
     if (sl == NULL) {
         yyerror("out of memory");
         exit(1);
     }
-    sl->sym = sym;
+    sl->symname = symname;
     sl->next = next;
-    printf("NEW SYMLIST (%s, %p)\n", sl->sym->name, (void*)sl->next);
+    printf("NEW SYMLIST (%s, %p)\n", sl->symname, (void*)sl->next);
     return sl;
 }
 
@@ -169,15 +170,15 @@ void print_tree(struct ast* a, int level) {
 
     switch(a->nodetype) {
         case 'R': 
-            printf("Symbol %s\n", ((struct symref *)a)->s->name);
+            printf("Symbol %s\n", ((struct symref *)a)->sym->name);
             break;
         case 'n':
             printf("Number %f\n", ((struct numval *)a)->number);
             break;
         case 'A': 
-            printf("Assign %s := (value type %c)\n", ((struct symasgn *)a)->s->name, ((struct symasgn *)a)->v->nodetype);
-            printf("%i. Variable name %s", level, ((struct symasgn *)a)->s->name);
-            print_tree(((struct symasgn *)a)->v, level);
+            printf("Assign %s := (value type %c)\n", ((struct symasgn *)a)->sym->name, ((struct symasgn *)a)->newval->nodetype);
+            printf("%i. Variable name %s", level, ((struct symasgn *)a)->sym->name);
+            print_tree(((struct symasgn *)a)->newval, level);
             break;
         case '+':
         case '-':
@@ -239,9 +240,10 @@ void print_tree(struct ast* a, int level) {
 
 void yyerror(char* s, ...)
 {
+    // TODO: change
     va_list ap;
     va_start(ap, s);
-    fprintf(stderr, "%d: error: ", yylineno);
+    fprintf(stderr, "%d: ", yylineno);
     vfprintf(stderr, s, ap);
     fprintf(stderr, "\n");
 }
@@ -261,20 +263,29 @@ struct symbol* lookup(char* s)
     struct symbol* symbolPtr = & symbolHashTable[getHash(s) % HASHSIZE];
     int i = HASHSIZE;
     while(i-- >= 0) {
-        if(symbolPtr->name && !strcmp(symbolPtr->name, s)) { 
-            return symbolPtr;
-        }
-        if(!symbolPtr->name) {
-            symbolPtr->name = strdup(s);
-            symbolPtr->value = 0;
+        if((symbolPtr->name == NULL) || (strcmp(symbolPtr->name, s) == 0)) { 
             return symbolPtr;
         }
         if(symbolPtr++ >= symbolHashTable + HASHSIZE) {
             symbolPtr = symbolHashTable;
         }
     }
-    fprintf(stderr, "Overflow of hash table of symbols.\n");
+    fprintf(stderr, "Symbol table overflow.\n");
     exit(1);
+}
+
+void dodef(struct symlist* syml) {
+    while (syml != NULL) {
+        printf("\tdefine symbol: %s\n", syml->symname);
+        struct symbol* sym = lookup(syml->symname);
+        if (sym->name != NULL) {
+            yyerror("identifier \"%s\" already defined", sym->name);
+            exit(1);
+        }
+        sym->name = syml->symname;
+        sym->value = 0;
+        syml = syml->next;
+    }
 }
 
 int main()

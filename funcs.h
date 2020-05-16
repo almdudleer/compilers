@@ -21,17 +21,17 @@ struct symbol { /* a variable name */
 
 struct symref {
     int nodetype; /* type N */
-    struct symbol *s;
+    struct symbol *sym;
 };
 
 struct symasgn {
     int nodetype; /* type = */
-    struct symbol *s;
-    struct ast *v; /* value */
+    struct symbol *sym;
+    struct ast *newval; /* value */
 };
 
 struct symlist {
-    struct symbol *sym;
+    char* symname;
     struct symlist *next;
 };
 
@@ -46,10 +46,9 @@ struct flow {
 /* build an AST */
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
 struct ast *newnum(double d);
-struct ast *newref(struct symbol *s);
-struct ast *newasgn(struct symbol *s, struct ast *v);
-struct symlist *newsymlist(struct symbol *sym, struct symlist *next);
-struct ast *newrt(struct symlist *syml, struct ast *l);
+struct ast *newref(char* symname);
+struct ast *newasgn(char* symname, struct ast *newval);
+struct symlist *newsymlist(char* symname, struct symlist *next);
 struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *tr);
 
 /* print AST */
@@ -60,6 +59,8 @@ double eval(struct ast *);
 
 /* delete and free an AST */
 void treefree(struct ast *);
+
+void dodef(struct symlist* syml);
 
 struct symbol *lookup(char*);
 

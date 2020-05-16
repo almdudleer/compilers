@@ -8,21 +8,21 @@ int yylex();
 %union {
         struct ast *a;
         double d;
-        struct symbol *s;
+        char* str;
         struct symlist *sl;
     }
 
 
 /* declare tokens */
 %token <d> NUM // number
-%token <s> NAME // variable
+%token <str> NAME // variable
 %token IF ELSE BEG END VAR // keywords
 %token SEP // markup
 %token EXIT
 %token ','
 
-%nonassoc '>' '<' '='
 %right ASN
+%nonassoc '>' '<' '='
 %left BITR BITL
 %left '+' '-'
 %left '*' '/'
@@ -31,22 +31,20 @@ int yylex();
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
-%type <a> exp stmt list composite program
+%type <a> exp stmt list composite 
 %type <sl> symlist
 
 %start root
 %%
 
-root: program { 
-                    print_tree($1, 1);
-                    printf("= %8.4g\n", eval($1));
-                    treefree($1);
-                    exit(0);
-              }
-    ;
-
-program: VAR symlist composite { $$ = newrt($2, $3); }
-    | composite { $$ = newrt(NULL, $1); }
+root: root composite { 
+                        print_tree($2, 1);
+                        printf("= %8.4g\n", eval($2));
+                        treefree($2);
+                        exit(0);
+                     }    
+    | VAR symlist { dodef($2); }
+    | { /* Epsilon */ }
     ;
 
 
