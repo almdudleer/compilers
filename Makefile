@@ -1,11 +1,11 @@
 debug := 0
-CFLAGS :=
 
 comp: src/main.c src/nodes.c src/nodes.h src/tree.c src/tree.h src/errors.h src/errors.c out/lex.yy.c out/parser.tab.c
-ifeq ($(debug), 1)
-    CFLAGS := $(CFLAGS) -DDEBUG
-endif
+ifneq ($(debug), 1)
 	gcc -o comp $(CFLAGS) src/* out/* -lfl
+else
+	gcc -o comp -DDEBUG src/* out/* -lfl
+endif
 
 out/lex.yy.c: scripts/lexer.l out/parser.tab.h out/parser.tab.c
 	mkdir -p out
