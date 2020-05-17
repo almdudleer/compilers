@@ -54,3 +54,8 @@ Run `./comp` to enter your program from stdin.
 ```
  make debug=1
 ```
+
+# Clean to rebuild
+```
+ make clean
+```
