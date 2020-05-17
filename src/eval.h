@@ -1,6 +1,6 @@
 #ifndef EVAL
 #define EVAL
-#include "funcs.h"
+#include "nodes.h"
 
 /* evaluate an AST */
 double eval(struct ast *);

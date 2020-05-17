@@ -1,7 +1,7 @@
 /* recognize tokens */
 %option noyywrap nodefault yylineno
 %{
-#include "../src/funcs.h"
+#include "../src/nodes.h"
 #include "../src/errors.h"
 #include "../out/parser.tab.h"
 %}

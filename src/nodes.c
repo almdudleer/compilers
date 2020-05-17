@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "funcs.h"
+#include "nodes.h"
 #include "errors.h"
 
 #define HASHSIZE 1000
