@@ -1,7 +1,7 @@
 debug := 0
 CFLAGS :=
 
-comp: src/main.c src/nodes.c src/nodes.h src/eval.c src/eval.h src/errors.h src/errors.c out/lex.yy.c out/parser.tab.c
+comp: src/main.c src/nodes.c src/nodes.h src/tree.c src/tree.h src/errors.h src/errors.c out/lex.yy.c out/parser.tab.c
 ifeq ($(debug), 1)
     CFLAGS := $(CFLAGS) -DDEBUG
 endif

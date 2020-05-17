@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../src/nodes.h"
-#include "../src/eval.h"
+#include "../src/tree.h"
 #include "../src/errors.h"
 int yylex();
 %}
