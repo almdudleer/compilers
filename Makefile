@@ -1,18 +1,20 @@
 debug := 0
+CFLAGS :=
 
-comp: funcs.c funcs.h lex.yy.c y.tab.c eval.c eval.h
-ifneq ($(debug), 1)
-	gcc -o comp funcs.c lex.yy.c y.tab.c eval.c -lfl
-else
-	gcc -o comp -DDEBUG funcs.c lex.yy.c y.tab.c eval.c -lfl
+comp: src/funcs.c src/funcs.h src/eval.c src/eval.h src/errors.h src/errors.c out/lex.yy.c out/parser.tab.c
+ifeq ($(debug), 1)
+    CFLAGS := $(CFLAGS) -DDEBUG
 endif
+	gcc -o comp $(CFLAGS) src/* out/* -lfl
 
-lex.yy.c: lexer.l y.tab.c
-	flex lexer.l
+out/lex.yy.c: scripts/lexer.l out/parser.tab.h out/parser.tab.c
+	mkdir -p out
+	flex --outfile="out/lex.yy.c" scripts/lexer.l
 
-y.tab.c: parser.y
-	bison -dy parser.y
+out/parser.tab.c, out/parser.tab.h: scripts/parser.y
+	mkdir -p out
+	bison --defines="out/parser.tab.h" --output="out/parser.tab.c" scripts/parser.y
 
 clean: 
-	rm -f comp y.output y.tab.c y.tab.h lex.yy.c
+	rm -rf comp out
 

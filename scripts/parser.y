@@ -1,8 +1,9 @@
 %{
-# include <stdio.h>
-# include <stdlib.h>
-# include "funcs.h"
-# include "eval.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "../src/funcs.h"
+#include "../src/eval.h"
+#include "../src/errors.h"
 int yylex();
 %}
 

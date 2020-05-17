@@ -1,8 +1,9 @@
 /* recognize tokens */
 %option noyywrap nodefault yylineno
 %{
-# include "funcs.h"
-# include "y.tab.h"
+#include "../src/funcs.h"
+#include "../src/errors.h"
+#include "../out/parser.tab.h"
 %}
 
 /* float exponent */
@@ -34,6 +35,6 @@ EXP ([Ee][-+]?[0-9]+)
 ";"                                               { return SEP; }
 [ \t\n]                                             { /* ignore white space */ }
 [a-zA-Z_][a-zA-Z0-9_]*                            { yylval.str = strdup(yytext); return NAME; }
-.                                                 { yyerror("Mystery character %c\n", *yytext); }
+.                                                 { new_error(BAD_CHAR, *yytext); }
 %%
 
