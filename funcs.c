@@ -59,7 +59,7 @@ struct ast* newref(char* symname) {
     struct symbol* sym = lookup(symname);
     if (sym->name == NULL) {
         yyerror("Use of undeclared identifier: %s", symname);
-        exit(1);
+        exit(2);
     }
     struct symref* node = malloc(sizeof(struct symref));
     if (node == NULL) {
@@ -78,7 +78,7 @@ struct ast* newasgn(char* symname, struct ast* newval) {
     struct symbol* sym = lookup(symname);
     if (sym->name == NULL) {
         yyerror("Use of undeclared identifier: %s", symname);
-        exit(1);
+        exit(2);
     }
     struct symasgn* node = malloc(sizeof(struct symasgn));
     if (node == NULL) {
@@ -128,53 +128,134 @@ double eval(struct ast* a)
     printf("EVAL\n");
     #endif
     double v = 1.0;
-
-//    switch(a->nodetype) {
-//        case 'K': v = ((struct numval* )a)->number; break;
-//        case '+': v = eval(a->l) + eval(a->r); break;
-//        case '-': v = eval(a->l) - eval(a->r); break;
-//        case '*': v = eval(a->l)*  eval(a->r); break;
-//        case '/': v = eval(a->l) / eval(a->r); break;
-//        case '1': v = eval(a->l) > eval(a->r); break;
-//        case '2': v = eval(a->l) < eval(a->r); break;
-//        case '3': v = eval(a->l) == eval(a->r); break;
-//        case 'l': v = (int) eval(a->l) << (int) eval(a->r); break;
-//        case 'r': v = (int) eval(a->l) >> (int) eval(a->r); break;
-//        case 'M': v = -eval(a->l); break;
-//        case ''
-//        default: printf("internal error: bad node %c\n", a->nodetype);
-//    }
-//    
-//    printf("Evaluated node type: %c\nEvaluated value: %f\n", a->nodetype, v);
-
+/*
+    switch(a->nodetype) {
+        case 'K': v = ((struct numval* )a)->number; break;
+        case '+': v = eval(a->l) + eval(a->r); break;
+        case '-': v = eval(a->l) - eval(a->r); break;
+        case '*': v = eval(a->l)*  eval(a->r); break;
+        case '/': v = eval(a->l) / eval(a->r); break;
+        case '1': v = eval(a->l) > eval(a->r); break;
+        case '2': v = eval(a->l) < eval(a->r); break;
+        case '3': v = eval(a->l) == eval(a->r); break;
+        case 'l': v = (int) eval(a->l) << (int) eval(a->r); break;
+        case 'r': v = (int) eval(a->l) >> (int) eval(a->r); break;
+        case 'M': v = -eval(a->l); break;
+        case ''
+        default: printf("internal error: bad node %c\n", a->nodetype);
+    }
+    
+    printf("Evaluated node type: %c\nEvaluated value: %f\n", a->nodetype, v);
+*/
     return v;
+}
+
+void listfree(struct symlist* l) {
+#ifdef DEBUG
+    printf("Free symlist element named %s\n", l->symname);
+#endif
+
+    if (l->next != NULL) {
+        listfree(l->next);
+    }
+    free(l->symname);
+    free(l);
 }
 
 void treefree(struct ast* a)
 {
     #ifdef DEBUG
     printf("TREE FREE\n");
+   
+    printf("free node %c\n", a->nodetype);
+    if (a->l != NULL) {
+        printf("Left node type %c\n", a->l->nodetype);
+    }
+    if (a->r != NULL) {
+        printf("Right node type %c\n", a->r->nodetype);
+    }
+
     #endif
-//    switch(a->nodetype) {
-//
-//         /* two subtrees* /
-//         case '+':
-//         case '-':
-//         case '*':
-//         case '/':
-//            treefree(a->r);
-//
-//         /* one subtree* /
-//         case 'M':
-//            treefree(a->l);
-//
-//         /* no subtree* /
-//         case 'C':
-//            free(a); 
-//            break;
-//
-//         default: printf("internal error: free bad node %c\n", a->nodetype);
-//    }
+
+    if (a == NULL) {
+        return;
+    }
+
+    switch(a->nodetype) {
+        /* define all variables */
+        case 'D':
+            if (((struct symdef *)a)->syml != NULL) {
+                listfree(((struct symdef *)a)->syml);
+            }
+            break;
+
+        /* three subtrees */
+        case 'I':
+            treefree(((struct flow *)a)->cond);
+            treefree(((struct flow *)a)->doif);
+            if (((struct flow *)a)->doelse != NULL) {
+                treefree(((struct flow *)a)->doelse);
+            }
+            break;
+
+        /* symlist */
+        case 'L':
+            if (a->l != NULL) {
+                treefree(a->l);
+            }
+            if (a->r != NULL) {
+                treefree(a->r);
+            }
+            break;
+
+        /* program root */
+        case 'P':
+            if (a->l != NULL) {
+                treefree(a->l);
+            }
+            if (a->r != NULL) {
+                treefree(a->r);
+            }
+            break;
+
+        /* assignment */
+        case 'A':
+            treefree(a->r);
+
+        /* reference type */
+        case 'R':
+            free(a->l);
+            break;
+
+//        case 'E':
+
+         /* two subtrees */
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        case '>':
+        case '<':
+        case '=':
+        case 'l':
+        case 'r':
+            treefree(a->r);
+
+         /* one subtree */
+        case 'M':
+        case 'c':
+            treefree(a->l);
+
+         /* no subtree */
+        case 'n':
+            break;
+
+        default: printf("internal error: free bad node %c\n", a->nodetype);
+    }
+
+    free(a); 
+    printf("Here segfault happens\n");
+    return;
 }
 
 void print_tree(struct ast* a, int level) {
@@ -297,7 +378,7 @@ struct symbol* lookup(char* s)
         }
     }
     fprintf(stderr, "Symbol table overflow.\n");
-    exit(1);
+    exit(3);
 }
 
 struct ast* newdef(struct symlist* syml) {
@@ -308,7 +389,7 @@ struct ast* newdef(struct symlist* syml) {
         struct symbol* sym = lookup(syml->symname);
         if (sym->name != NULL) {
             yyerror("identifier \"%s\" already defined", sym->name);
-            exit(1);
+            exit(4);
         }
         sym->name = syml->symname;
         sym->value = 0;

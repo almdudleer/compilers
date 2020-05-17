@@ -1,0 +1,12 @@
+var a, b, c, d begin
+/** what I do
+  ** I don't understand
+  *kinda embarrased****/
+/* sorry again
+   */
+a   := b;
+a:= 3=4;
+begin
+procedure := 4 >> 2; /*this should not work*/
+end;
+end
