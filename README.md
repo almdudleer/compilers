@@ -50,12 +50,7 @@ cat examples/example.txt | ./comp
 
 Run `./comp` to enter your program from stdin.
 
-# Build project in debug mode
+### Build project in debug mode
 ```
  make debug=1
-```
-
-# Clean to rebuild
-```
- make clean
 ```
