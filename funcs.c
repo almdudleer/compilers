@@ -211,6 +211,7 @@ void treefree(struct ast* a)
          /* one subtree */
         case 'M':
         case 'c':
+        case 'E':
             treefree(a->l);
             break;
          /* no subtree */
@@ -307,6 +308,10 @@ void print_tree(struct ast* a, int level) {
             print_tree(a->l, level);
             print_tree(a->r, level);
             break;
+        case 'E':
+            printf("Exit with argument of type %c", a->l->nodetype);
+            print_tree(a->l, level);
+            return;
         default:
             printf("Bad nodetype %c\n", a->nodetype);
             return;
