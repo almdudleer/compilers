@@ -23,12 +23,12 @@ EXP ([Ee][-+]?[0-9]+)
 "/" |
 "(" |
 ")"                                               { return yytext[0]; }
-("IF"|"if"|"If")                                  { return IF; }
-("ELSE"|"else"|"Else")                            { return ELSE; }
-("BEGIN"|"begin"|"Begin")                         { return BEG; }
-("END"|"end"|"End")                               { return END; }
-("VAR"|"var"|"Var")                               { return VAR; }
-"exit"                                            { return EXIT; }  
+"if"                                              { return IF; }
+"else"                                            { return ELSE; }
+"begin"                                           { return BEG; }
+"end"                                             { return END; }
+"var"                                             { return VAR; }
+"print"                                           { return PRINT; }  
 [0-9]+"."[0-9]*{EXP}? |
 "."?[0-9]+{EXP}?                                  { yylval.d = atof(yytext); return NUM; }
 ";"                                               { return SEP; }

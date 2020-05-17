@@ -19,7 +19,7 @@ int yylex();
 %token <str> NAME // variable
 %token IF ELSE BEG END VAR // keywords
 %token SEP // markup
-%token EXIT
+%token PRINT
 %token ','
 
 %right ASN
@@ -40,6 +40,7 @@ int yylex();
 
 root: program { 
                    print_tree($1, 1);
+                   printf("\n--------- PROGRAM ---------\n");
                    printf("Program finished with exit code %f\n", eval($1));
                    treefree($1);
                    exit(0);
@@ -65,7 +66,7 @@ list: { $$ = NULL; }
 
 stmt: IF '(' exp ')' stmt %prec LOWER_THAN_ELSE{ $$ = newflow('I', $3, $5, NULL); }
     | IF '(' exp ')' stmt ELSE stmt { $$ = newflow ('I', $3, $5, $7); }
-    | EXIT '(' exp ')' { $$ = newast('E', $3, NULL); }
+    | PRINT '(' exp ')' { $$ = newast('p', $3, NULL); }
     | composite
     | exp
     ;

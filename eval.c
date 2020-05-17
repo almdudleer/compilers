@@ -1,4 +1,5 @@
 #include "eval.h"
+#include <stdio.h>
 #include <stddef.h>
 
 double eval(struct ast* a)
@@ -45,11 +46,14 @@ double eval(struct ast* a)
         case 'M': /* uminus */
             v = -eval(a->l); break;
 
-        case 'E': /* EXIT */
-            return eval(a->l);
+        case 'p': /* EXIT */
+            printf("%f\n", eval(a->l));
+            v = 0;
+            break;
 
         case 'c': /* composite */
-            v = eval(a->l);
+            eval(a->l);
+            v = 0;
             break;
 
         case 'n': v = ((struct numval* )a)->number; break;
@@ -65,8 +69,10 @@ double eval(struct ast* a)
 
         default: yyerror("internal error: bad node %c\n", a->nodetype);
     }
-    
-//    printf("Evaluated node type: %c\nEvaluated value: %f\n", a->nodetype, v);
+
+#ifdef DEBUG
+    printf("Evaluated node type: %c\nEvaluated value: %f\n", a->nodetype, v);
+#endif
     
     return v;
 }   

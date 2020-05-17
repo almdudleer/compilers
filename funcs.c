@@ -194,9 +194,7 @@ void treefree(struct ast* a)
             free((struct symref *)a);
             return;
 
-//        case 'E':
-
-         /* two subtrees */
+        /* two subtrees */
         case '+':
         case '-':
         case '*':
@@ -211,7 +209,7 @@ void treefree(struct ast* a)
          /* one subtree */
         case 'M':
         case 'c':
-        case 'E':
+        case 'p':
             treefree(a->l);
             break;
          /* no subtree */
@@ -308,8 +306,8 @@ void print_tree(struct ast* a, int level) {
             print_tree(a->l, level);
             print_tree(a->r, level);
             break;
-        case 'E':
-            printf("Exit with argument of type %c", a->l->nodetype);
+        case 'p':
+            printf("Print with argument of type %c\n", a->l->nodetype);
             print_tree(a->l, level);
             return;
         default:
