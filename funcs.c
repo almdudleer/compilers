@@ -122,38 +122,10 @@ struct ast* newflow(int nodetype, struct ast* cond, struct ast* bi, struct ast* 
     return (struct ast*) node;
 }
 
-double eval(struct ast* a)
-{
-    #ifdef DEBUG
-    printf("EVAL\n");
-    #endif
-    double v = 1.0;
-/*
-    switch(a->nodetype) {
-        case 'K': v = ((struct numval* )a)->number; break;
-        case '+': v = eval(a->l) + eval(a->r); break;
-        case '-': v = eval(a->l) - eval(a->r); break;
-        case '*': v = eval(a->l)*  eval(a->r); break;
-        case '/': v = eval(a->l) / eval(a->r); break;
-        case '1': v = eval(a->l) > eval(a->r); break;
-        case '2': v = eval(a->l) < eval(a->r); break;
-        case '3': v = eval(a->l) == eval(a->r); break;
-        case 'l': v = (int) eval(a->l) << (int) eval(a->r); break;
-        case 'r': v = (int) eval(a->l) >> (int) eval(a->r); break;
-        case 'M': v = -eval(a->l); break;
-        case ''
-        default: printf("internal error: bad node %c\n", a->nodetype);
-    }
-    
-    printf("Evaluated node type: %c\nEvaluated value: %f\n", a->nodetype, v);
-*/
-    return v;
-}
-
 void listfree(struct symlist* l) {
-#ifdef DEBUG
+    #ifdef DEBUG
     printf("Free symlist element named %s\n", l->symname);
-#endif
+    #endif
 
     if (l->next != NULL) {
         listfree(l->next);
@@ -165,16 +137,7 @@ void listfree(struct symlist* l) {
 void treefree(struct ast* a)
 {
     #ifdef DEBUG
-    printf("TREE FREE\n");
-   
     printf("free node %c\n", a->nodetype);
-    if (a->l != NULL) {
-        printf("Left node type %c\n", a->l->nodetype);
-    }
-    if (a->r != NULL) {
-        printf("Right node type %c\n", a->r->nodetype);
-    }
-
     #endif
 
     if (a == NULL) {
@@ -187,7 +150,8 @@ void treefree(struct ast* a)
             if (((struct symdef *)a)->syml != NULL) {
                 listfree(((struct symdef *)a)->syml);
             }
-            break;
+            free((struct symdef *)a);
+            return;
 
         /* three subtrees */
         case 'I':
@@ -196,9 +160,10 @@ void treefree(struct ast* a)
             if (((struct flow *)a)->doelse != NULL) {
                 treefree(((struct flow *)a)->doelse);
             }
-            break;
+            free((struct flow *)a);
+            return;
 
-        /* symlist */
+        /* list of composite */
         case 'L':
             if (a->l != NULL) {
                 treefree(a->l);
@@ -220,12 +185,14 @@ void treefree(struct ast* a)
 
         /* assignment */
         case 'A':
-            treefree(a->r);
+            treefree(((struct symasgn *)a)->newval);
+            free((struct symasgn *)a);
+            return;
 
         /* reference type */
         case 'R':
-            free(a->l);
-            break;
+            free((struct symref *)a);
+            return;
 
 //        case 'E':
 
@@ -245,16 +212,17 @@ void treefree(struct ast* a)
         case 'M':
         case 'c':
             treefree(a->l);
-
+            break;
          /* no subtree */
         case 'n':
-            break;
+            free((struct numval *)a);
+            return;
 
         default: printf("internal error: free bad node %c\n", a->nodetype);
     }
 
     free(a); 
-    printf("Here segfault happens\n");
+    
     return;
 }
 
@@ -382,6 +350,7 @@ struct symbol* lookup(char* s)
 }
 
 struct ast* newdef(struct symlist* syml) {
+    struct symlist* head = syml;
     while (syml != NULL) {
         #ifdef DEBUG
         printf("\tdefine symbol: %s\n", syml->symname);
@@ -397,7 +366,7 @@ struct ast* newdef(struct symlist* syml) {
     }
     struct symdef* node = malloc(sizeof(struct symdef));
     node->nodetype = 'D';
-    node->syml = syml;
+    node->syml = head;
     return (struct ast*) node;
 }
 

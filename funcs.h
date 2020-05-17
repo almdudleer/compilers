@@ -1,3 +1,6 @@
+#ifndef FUNCS
+#define FUNCS
+
 /* interface to the lexer */
 extern int yylineno; /* from lexer */
 void yyerror(char *s, ...);
@@ -60,11 +63,9 @@ struct ast* newdef(struct symlist* syml);
 /* print AST */
 void print_tree(struct ast * a, int level);
 
-/* evaluate an AST */
-double eval(struct ast *);
-
 /* delete and free an AST */
 void treefree(struct ast *);
 
 struct symbol *lookup(char*);
 
+#endif
