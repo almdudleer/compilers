@@ -2,6 +2,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include "funcs.h"
+# include "eval.h"
 int yylex();
 %}
 
@@ -39,7 +40,7 @@ int yylex();
 
 root: program { 
                    print_tree($1, 1);
-                   /* printf("Program finished with exit code %f\n", eval($1)); */
+                   printf("Program finished with exit code %f\n", eval($1));
                    treefree($1);
                    exit(0);
               };

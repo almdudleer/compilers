@@ -28,6 +28,7 @@ EXP ([Ee][-+]?[0-9]+)
 ("BEGIN"|"begin"|"Begin")                         { return BEG; }
 ("END"|"end"|"End")                               { return END; }
 ("VAR"|"var"|"Var")                               { return VAR; }
+"exit"                                            { return EXIT; }  
 [0-9]+"."[0-9]*{EXP}? |
 "."?[0-9]+{EXP}?                                  { yylval.d = atof(yytext); return NUM; }
 ";"                                               { return SEP; }
