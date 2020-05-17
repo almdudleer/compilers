@@ -1,0 +1,4 @@
+var q, w, e, r, t, y, u, i, o, p, a, s, d, f, g, h, j, k, l, z, x, c, v, b, n, m, qq, ww, ee, rr, tt, yy, uu, ii, oo, pp, aa, ss, dd, ff, gg, hh, jj, kk, ll, zz, xx, cc, vv, bb, nn, mm, qw, qe, qr, qt, qy, qu, qi, qo, qp, qa, qs, qd, qf, qg, qh, qj, qk, ql, qz, qx, qc, qv, qb, qn, qm, wq, we, wr, wt, wy, wu, wi, wo, wp, wa, ws, wd, wf, wg, wh, wj, wk, wl, wz, wx, wc, wv, wb, wn, wm, eq, ew, er, et, ey, eu, ei, eo, ep, ea, es, ed, ef, eg, eh, ej, ek, el, ez, ex, ec, ev, eb, en, em, rq, rw, re, rt, ry, ru, ri, ro, rp, ra, rs, rd, rf, rg, rh, rj, rk, rl, rz, rx, rc, rv, rb, rn, rm, tq, tw, te, tr, ty, tu, ti, to, tp, ta, ts, td, tf, tg, th, tj, tk, tl, tz, tx, tc, tv, tb, tn, tm
+begin
+a:=3;
+end

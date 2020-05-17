@@ -1,0 +1,5 @@
+var a, b, a
+begin
+a := 3;
+end
+

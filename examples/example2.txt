@@ -1,12 +1,12 @@
 var a, b, c, d begin
-/** what I do
-  ** I don't understand
-  *kinda embarrased****/
-/* sorry again
+/** first line of comment
+  ** second line
+  * test numbers 234 and tab    ****/
+/* test 1 star
    */
 a   := b;
 a:= 3=4;
 begin
-procedure := 4 >> 2; /*this should not work*/
+d := 4 >> 2; /*test comment in same string*/
 end;
 end

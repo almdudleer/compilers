@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include "errors.h"
 
+
+void print_usage() {
+    printf("This compiler has 2 options:\n\t-p\tuse this to output abstract syntax tree\n");
+    printf("\t-f <filename>\tuse this to read compiled program from file\n");
+}
+
 // custom errors
 void new_error(err_type type, ...) {
     va_list ap;
@@ -20,6 +26,22 @@ void new_error(err_type type, ...) {
         case UNDECLARED_IDENT:
             vsprintf(msg, "Use of undeclared identifier: %s", ap);
             break;
+        case UNKNOWN_OPTION:
+            vsprintf(msg, "Unknown option: -%c\n", ap);
+            print_usage();
+            break;
+        case OPTION_REQUIRES_AN_ARGUMENT:
+            vsprintf(msg, "Option -%c requires an argument.\n", ap);
+            print_usage();
+            break;
+        case UNKNOWN_OPTION_CHARACTER:
+            vsprintf(msg, "Unknown option character: %x\n", ap);
+            print_usage();
+            break;
+        case UNKNOWN_OPTION_ERROR:
+            vsprintf(msg, "Unknown option error has occured\n", ap);
+            print_usage();
+            break;
     }
 
     fprintf(stderr, "%d: %s\n", yylineno, msg);
@@ -33,3 +55,4 @@ void yyerror(char* s, ...) {
     vfprintf(stderr, s, ap);
     fprintf(stderr, "\n");
 }
+

@@ -5,7 +5,11 @@ typedef enum err_type {
     BAD_CHAR,
     OUT_OF_MEMORY,
     DUPLICATE_DECL,
-    UNDECLARED_IDENT
+    UNDECLARED_IDENT,
+    OPTION_REQUIRES_AN_ARGUMENT,
+    UNKNOWN_OPTION,
+    UNKNOWN_OPTION_CHARACTER,
+    UNKNOWN_OPTION_ERROR
 } err_type;
 
 extern int yylineno; /* from lexer */

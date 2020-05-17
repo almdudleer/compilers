@@ -5,8 +5,12 @@
 
 double eval(struct ast* a)
 {
+    if (!a) {
+        return 0;
+    }
+
     #ifdef DEBUG
-    printf("EVAL\n");
+    printf("EVAL node (type %c)\n", a->nodetype);
     #endif
     double v = 1.0;
     
@@ -24,9 +28,9 @@ double eval(struct ast* a)
 
         case 'L': /* statement list */
         case 'P': /* program root */
-            if (a->l != NULL)
+            if (a->l)
                 eval(a->l);
-            if (a->r != NULL)
+            if (a->r)
                 eval(a->r);
             v = 0;
             break;
@@ -44,7 +48,7 @@ double eval(struct ast* a)
             break;
         }
 
-        case 'M': /* uminus */
+        case 'M': /* unminus */
             v = -eval(a->l); break;
 
         case 'p': /* EXIT */
@@ -150,7 +154,7 @@ void print_tree(struct ast* a, int level) {
             break;
         case 'c':
             printf("Composite type (Begin ... End)\n");
-            if (a->l != NULL) {
+            if (a->l) {
                 print_tree(a->l, level);
             }
             break;
@@ -171,18 +175,18 @@ void print_tree(struct ast* a, int level) {
 
 void treefree(struct ast* a)
 {
+    if (!a) {
+        return;
+    }
+
 #ifdef DEBUG
     printf("free node %c\n", a->nodetype);
 #endif
 
-    if (a == NULL) {
-        return;
-    }
-
     switch(a->nodetype) {
-        /* define all variables */
+            /* define all variables */
         case 'D':
-            if (((struct symdef *)a)->syml != NULL) {
+            if (((struct symdef *)a)->syml) {
                 listfree(((struct symdef *)a)->syml);
             }
             free((struct symdef *)a);
@@ -192,7 +196,7 @@ void treefree(struct ast* a)
         case 'I':
             treefree(((struct flow *)a)->cond);
             treefree(((struct flow *)a)->doif);
-            if (((struct flow *)a)->doelse != NULL) {
+            if (((struct flow *)a)->doelse) {
                 treefree(((struct flow *)a)->doelse);
             }
             free((struct flow *)a);
@@ -200,20 +204,20 @@ void treefree(struct ast* a)
 
             /* list of composite */
         case 'L':
-            if (a->l != NULL) {
+            if (a->l) {
                 treefree(a->l);
             }
-            if (a->r != NULL) {
+            if (a->r) {
                 treefree(a->r);
             }
             break;
 
             /* program root */
         case 'P':
-            if (a->l != NULL) {
+            if (a->l) {
                 treefree(a->l);
             }
-            if (a->r != NULL) {
+            if (a->r) {
                 treefree(a->r);
             }
             break;
@@ -247,6 +251,7 @@ void treefree(struct ast* a)
         case 'p':
             treefree(a->l);
             break;
+
             /* no subtree */
         case 'n':
             free((struct numval *)a);

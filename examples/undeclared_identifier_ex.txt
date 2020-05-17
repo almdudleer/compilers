@@ -1,0 +1,5 @@
+VAR a, b, c
+begin
+bad_var123 := 3;
+end
+

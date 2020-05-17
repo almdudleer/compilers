@@ -3,4 +3,7 @@ begin
 a := 5 + 5;
 b := a - 4;
 c := b * 3 / 2;
+print(a);
+print(b);
+print(c);
 end
