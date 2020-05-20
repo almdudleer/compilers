@@ -10,4 +10,7 @@ void print_tree(struct ast * a, int level);
 
 /* delete and free an AST */
 void treefree(struct ast *);
+
+extern int printflag;
+
 #endif

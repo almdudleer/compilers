@@ -83,6 +83,11 @@ double eval(struct ast* a)
 }
 
 void print_tree(struct ast* a, int level) {
+    
+    if (printflag == 0) {
+        return;
+    }
+
     printf("%i. ", level);
     level++;
 

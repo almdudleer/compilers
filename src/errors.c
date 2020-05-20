@@ -4,8 +4,7 @@
 
 
 void print_usage() {
-    printf("This compiler has 2 options:\n\t-p\tuse this to output abstract syntax tree\n");
-    printf("\t-f <filename>\tuse this to read compiled program from file\n");
+    printf("This compiler has 1 option:\n\t-p\tuse this to output abstract syntax tree\n");
 }
 
 // custom errors
@@ -28,10 +27,6 @@ void new_error(err_type type, ...) {
             break;
         case UNKNOWN_OPTION:
             vsprintf(msg, "Unknown option: -%c\n", ap);
-            print_usage();
-            break;
-        case OPTION_REQUIRES_AN_ARGUMENT:
-            vsprintf(msg, "Option -%c requires an argument.\n", ap);
             print_usage();
             break;
         case UNKNOWN_OPTION_CHARACTER:

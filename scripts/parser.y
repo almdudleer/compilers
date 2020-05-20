@@ -7,8 +7,6 @@
 int yylex();
 %}
 
-%parse-param { FILE* filename }
-
 %union {
         struct ast *a;
         double d;
