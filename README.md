@@ -45,10 +45,11 @@ end
 
 ### Run test example
 ```
-cat examples/example.txt | ./comp
+./comp -p < examples/example.txt
 ```
 
 Run `./comp` to enter your program from stdin.
+Delete flag `-p` to remove output of an abstract syntax tree.
 
 ### Build project in debug mode
 ```
