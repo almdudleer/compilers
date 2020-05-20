@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "errors.h"
-#include "tree.h"
 
 int printflag = 0;
 
@@ -13,7 +12,7 @@ int main(int argc, char **argv)
 {
     int c = 0;
 
-    while ((c = getopt (argc, argv, "p:")) != -1) {
+    while ((c = getopt (argc, argv, "p")) != -1) {
         switch(c) {
             
             case 'p':

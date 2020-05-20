@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stddef.h>
 
+extern int printflag;
+
 double eval(struct ast* a)
 {
     if (!a) {
@@ -83,7 +85,7 @@ double eval(struct ast* a)
 }
 
 void print_tree(struct ast* a, int level) {
-    
+ 
     if (printflag == 0) {
         return;
     }
