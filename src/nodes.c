@@ -85,7 +85,7 @@ struct ast* newref(char* symname) {
     struct symbol* sym = lookup(symname);
     if (sym->name == NULL) {
         new_error(UNDECLARED_IDENT, symname);
-        exit(2);
+        exit(1);
     }
     struct symref* node = malloc(sizeof(struct symref));
     if (node == NULL) {

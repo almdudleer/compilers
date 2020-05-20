@@ -1,4 +1,4 @@
-VAR a, b
+var a, b
 begin
 badvar := 3;
 end
