@@ -1,5 +1,4 @@
-VAR a, b, c
+VAR a, b
 begin
-bad_var123 := 3;
+badvar := 3;
 end
-

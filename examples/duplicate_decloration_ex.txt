@@ -1,0 +1,4 @@
+var a, b, a, b
+begin
+a := 2;
+end
